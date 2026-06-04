@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">WebToNative</string>
+
+    <string name="error_get_credential">Failure getting credentials.</string>
+    <string name="error_parsing">Issue with parsing received GoogleIdToken.</string>
+    <string name="error_no_credential">No credentials found.</string>
+    <string name="error_get_credential_custom">Issue with custom credential request.</string>
+    <string name="error_cancellation">Sign-in was canceled.</string>
+    <string name="error_unknown">Something went wrong. Please try again.</string>
+    <string name="error_clear_credential">Could not clear user credentials.</string>
+
+    <string name="error_empty_url">Please Enter a Url to load web.</string>
+    <string name="error_invalid_url">Please Enter a valid Url to load web.</string>
+
+    <string name="error_constraint_local">Data update failed. Please try again.</string>
+    <string name="error_full_disk">Not enough storage space. Please free up some space.</string>
+    <string name="error_corrupted">A database error occurred. Please restart the app.</string>
+</resources>
