@@ -4,6 +4,6 @@ import androidx.annotation.DrawableRes
 
 data class CarouselItem(
     val id: Int,
-    @DrawableRes val imageResId: Int,
+    @field:DrawableRes val imageResId: Int,
     val contentDescription: String
 )

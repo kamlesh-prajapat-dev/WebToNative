@@ -41,6 +41,13 @@ class LoginViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<UiState>(UiState.Idle)
     val uiState: StateFlow<UiState> get() = _uiState.asStateFlow()
 
+    private val _noInternet = MutableStateFlow(false)
+    val noInternet: StateFlow<Boolean> get() = _noInternet.asStateFlow()
+
+    fun onChangeNoInternet(flag: Boolean) {
+        _noInternet.value = flag
+    }
+
     private val _isLoaderVisible = MutableStateFlow(false)
     val isLoaderVisible: StateFlow<Boolean> get() = _isLoaderVisible.asStateFlow()
 

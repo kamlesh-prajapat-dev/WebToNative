@@ -23,8 +23,10 @@ import com.example.webtonative.auth.ui.component.GoogleAuthUiProvider
 import com.example.webtonative.auth.ui.component.SignInSection
 import com.example.webtonative.auth.ui.component.TopIllustration
 import com.example.webtonative.core.ui.component.AppLogo
+import com.example.webtonative.core.ui.component.dialog.GenericDialog
 import com.example.webtonative.core.ui.component.loader.Loader
 import com.example.webtonative.core.ui.util.UiState
+import com.example.webtonative.util.NetworkUtils
 
 @Composable
 fun LoginScreen(
@@ -35,6 +37,7 @@ fun LoginScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val isLoaderVisible by viewModel.isLoaderVisible.collectAsStateWithLifecycle()
+    val noInternet by viewModel.noInternet.collectAsStateWithLifecycle()
 
     LaunchedEffect(uiState) {
         when (uiState) {
@@ -103,15 +106,19 @@ fun LoginScreen(
             // Sign In Section
             SignInSection(
                 onGoogleSignInClick = {
-                    val request = GoogleAuthUiProvider.getGoogleAuthUi(
-                        webClientId = webClientId,
-                        flag = true
-                    )
+                    if (NetworkUtils.isInternetAvailable(context = context)) {
+                        val request = GoogleAuthUiProvider.getGoogleAuthUi(
+                            webClientId = webClientId,
+                            flag = true
+                        )
 
-                    viewModel.signIn(
-                        request = request,
-                        context = context
-                    )
+                        viewModel.signIn(
+                            request = request,
+                            context = context
+                        )
+                    } else {
+                        viewModel.onChangeNoInternet(true)
+                    }
                 }
             )
 
@@ -126,4 +133,15 @@ fun LoginScreen(
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Loader(modifier = Modifier.fillMaxSize())
         }
+
+    if (noInternet) {
+        GenericDialog(
+            title = "No Internet Connection.",
+            text = "Please check your network connection and try again.",
+            onDismiss = { viewModel.onChangeNoInternet(false) },
+            onConfirm = { viewModel.onChangeNoInternet(false) },
+            dismissLabel = "",
+            confirmLabel = "OK"
+        )
+    }
 }

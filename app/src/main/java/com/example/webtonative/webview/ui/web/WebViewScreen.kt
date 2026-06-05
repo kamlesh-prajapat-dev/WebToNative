@@ -44,8 +44,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.webtonative.core.ui.component.dialog.GenericDialog
 import com.example.webtonative.core.ui.component.loader.Loader
 import com.example.webtonative.core.ui.util.UiState
+import com.example.webtonative.util.NetworkUtils
 
 @Composable
 fun WebViewScreen(
@@ -57,6 +59,7 @@ fun WebViewScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val currentUrl by viewModel.currentUrl.collectAsStateWithLifecycle()
+    val noInternet by viewModel.noInternet.collectAsStateWithLifecycle()
 
     val webView = remember {
         WebView(context).apply {
@@ -98,8 +101,12 @@ fun WebViewScreen(
     }
 
     LaunchedEffect(url) {
-        webView.loadUrl(url)
-        viewModel.updateUrl(url)
+        if (NetworkUtils.isInternetAvailable(context = context)) {
+            webView.loadUrl(url)
+            viewModel.updateUrl(url)
+        } else {
+            viewModel.onChangeNoInternet(true)
+        }
     }
 
     BackHandler {
@@ -144,6 +151,17 @@ fun WebViewScreen(
         ) {
             Loader()
         }
+    }
+
+    if(noInternet) {
+        GenericDialog(
+            title = "No Internet Connection.",
+            text = "Please check your network connection and try again.",
+            onDismiss = { viewModel.onChangeNoInternet(false) },
+            onConfirm = { viewModel.onChangeNoInternet(false); webView.loadUrl(url); viewModel.updateUrl(url) },
+            confirmLabel = "OK",
+            dismissLabel = ""
+        )
     }
 }
 

@@ -15,4 +15,7 @@
     <string name="error_constraint_local">Data update failed. Please try again.</string>
     <string name="error_full_disk">Not enough storage space. Please free up some space.</string>
     <string name="error_corrupted">A database error occurred. Please restart the app.</string>
+
+    <string name="notification_title">Welcome Back</string>
+    <string name="notification_message">Thanks for opening the app</string>
 </resources>

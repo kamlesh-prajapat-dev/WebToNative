@@ -39,7 +39,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -64,6 +65,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.process)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -109,4 +111,9 @@ dependencies {
     // Room Database
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
+
+    // Worker and Hilt Compiler
+    implementation(libs.androidx.work.runtime.ktx)
+    ksp(libs.androidx.hilt.compiler)
+    implementation(libs.androidx.hilt.work)
 }

@@ -29,6 +29,13 @@ class WebViewViewModel @Inject constructor(
         _isLoading.value = flag ?: !_isLoading.value
     }
 
+    private val _noInternet = MutableStateFlow(false)
+    val noInternet: StateFlow<Boolean> get() = _noInternet.asStateFlow()
+
+    fun onChangeNoInternet(flag: Boolean) {
+        _noInternet.value = flag
+    }
+
     private val _currentUrl = MutableStateFlow("")
     val currentUrl: StateFlow<String> get() = _currentUrl.asStateFlow()
 
