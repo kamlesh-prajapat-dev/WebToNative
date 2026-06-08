@@ -8,13 +8,12 @@ import java.util.Base64
 object GoogleAuthUiProvider  {
 
     fun getGoogleAuthUi(
-        webClientId: String,
-        flag: Boolean
+        webClientId: String
     ) : GetCredentialRequest {
 
         // Create a Google ID option with filtering by authorized accounts enabled.
         val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(flag)
+            .setFilterByAuthorizedAccounts(false)
             .setServerClientId(webClientId)
             .setNonce(generateSecureRandomNonce())
             .build()

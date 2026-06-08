@@ -11,6 +11,7 @@ import com.example.webtonative.core.ui.util.UiState
 import com.example.webtonative.home.domain.repository.AuthRepository
 import com.example.webtonative.home.domain.validator.Validator
 import com.example.webtonative.home.ui.util.asUiText
+import com.example.webtonative.notification.schedular.DailyNotificationSchedular
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +24,8 @@ import kotlin.time.Duration.Companion.milliseconds
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     @param: HomeRepo private val repository: AuthRepository,
-    private val validator: Validator
+    private val validator: Validator,
+    private val schedular: DailyNotificationSchedular
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState>(UiState.Idle)
@@ -56,6 +58,7 @@ class HomeViewModel @Inject constructor(
                 }
                 is Result.Success<Boolean, SignInWithGoogleError> -> {
                     delay(500.milliseconds)
+                    schedular.cancelSchedular()
                     _uiState.value = UiState.Success(
                         data = result.data
                     )

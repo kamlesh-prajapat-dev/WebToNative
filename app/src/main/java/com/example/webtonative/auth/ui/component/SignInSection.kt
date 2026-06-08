@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.sp
 import com.example.webtonative.R
 
 @Composable
-fun SignInSection(onGoogleSignInClick: () -> Unit) {
+fun SignInSection(onGoogleSignInClick: () -> Unit, isEnabled: Boolean) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -60,7 +60,8 @@ fun SignInSection(onGoogleSignInClick: () -> Unit) {
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.onBackground
             ),
-            shape = RoundedCornerShape(20.dp)
+            shape = RoundedCornerShape(20.dp),
+            enabled = isEnabled
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,

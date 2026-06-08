@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,46 +35,7 @@ fun LoginScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val isLoaderVisible by viewModel.isLoaderVisible.collectAsStateWithLifecycle()
     val noInternet by viewModel.noInternet.collectAsStateWithLifecycle()
-
-    LaunchedEffect(uiState) {
-        when (uiState) {
-            is UiState.Error -> {
-
-                if ((uiState as UiState.Error).flag) {
-                    val request = GoogleAuthUiProvider.getGoogleAuthUi(
-                        webClientId = webClientId,
-                        flag = false
-                    )
-
-                    viewModel.signIn(
-                        request = request,
-                        context = context
-                    )
-                } else {
-                    Toast.makeText(
-                        context,
-                        (uiState as UiState.Error).error.asString(context),
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-
-                viewModel.onChangeLoaderVisible(false)
-            }
-
-            UiState.Idle -> viewModel.onChangeLoaderVisible(false)
-
-            UiState.Loading -> {
-                viewModel.onChangeLoaderVisible(true)
-            }
-
-            is UiState.Success<*> -> {
-                viewModel.onChangeLoaderVisible(false)
-                onGoogleSignInClick()
-            }
-        }
-    }
 
     Surface(
         modifier = Modifier.fillMaxSize()
@@ -108,8 +68,7 @@ fun LoginScreen(
                 onGoogleSignInClick = {
                     if (NetworkUtils.isInternetAvailable(context = context)) {
                         val request = GoogleAuthUiProvider.getGoogleAuthUi(
-                            webClientId = webClientId,
-                            flag = true
+                            webClientId = webClientId
                         )
 
                         viewModel.signIn(
@@ -119,7 +78,8 @@ fun LoginScreen(
                     } else {
                         viewModel.onChangeNoInternet(true)
                     }
-                }
+                },
+                isEnabled = uiState !is UiState.Loading
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -129,10 +89,30 @@ fun LoginScreen(
         }
     }
 
-    if (isLoaderVisible)
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Loader(modifier = Modifier.fillMaxSize())
+    when (uiState) {
+        is UiState.Error -> {
+            Toast.makeText(
+                context,
+                (uiState as UiState.Error).error.asString(context),
+                Toast.LENGTH_LONG
+            ).show()
         }
+
+        UiState.Idle -> Unit
+
+        UiState.Loading -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Loader(modifier = Modifier.fillMaxSize())
+            }
+        }
+
+        is UiState.Success<*> -> {
+            onGoogleSignInClick()
+        }
+    }
 
     if (noInternet) {
         GenericDialog(

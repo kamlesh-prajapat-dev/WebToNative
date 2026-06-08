@@ -6,7 +6,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
-import com.example.webtonative.notification.schedular.DailyNotificationSchedular
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
@@ -20,7 +19,6 @@ class WebToNativeApp: Application(), Configuration.Provider {
         super.onCreate()
 
         createNotificationChannel()
-        DailyNotificationSchedular.scheduleDailyWelcomeNotification(applicationContext)
     }
     private fun createNotificationChannel() {
         val channel = NotificationChannel(

@@ -17,6 +17,8 @@ import com.example.webtonative.core.domain.util.error.SignInWithGoogleError
 import com.example.webtonative.core.ui.util.UiState
 import com.example.webtonative.core.ui.util.UiText
 import com.example.webtonative.core.ui.util.mapper.asUiText
+import com.example.webtonative.notification.schedular.DailyNotificationSchedular
+import com.example.webtonative.notification.schedular.NotificationSchedular
 import com.example.webtonative.util.logger.Logger
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
@@ -31,6 +33,8 @@ import kotlinx.coroutines.launch
 class LoginViewModel @Inject constructor(
     @param:LoginRepo private val repository: AuthRepository,
     private val handler: SignInRequestHandler,
+    private val schedular: NotificationSchedular,
+    private val dailySchedular: DailyNotificationSchedular,
     private val logger: Logger
 ) : ViewModel() {
 
@@ -48,21 +52,11 @@ class LoginViewModel @Inject constructor(
         _noInternet.value = flag
     }
 
-    private val _isLoaderVisible = MutableStateFlow(false)
-    val isLoaderVisible: StateFlow<Boolean> get() = _isLoaderVisible.asStateFlow()
-
-    fun onChangeLoaderVisible(
-        flag: Boolean
-    ) {
-        _isLoaderVisible.value = flag
-    }
-
     fun signIn(
         request: GetCredentialRequest,
         context: Context
     ) {
         viewModelScope.launch {
-
             _uiState.value = UiState.Loading
 
             when (val result = handler.requestHandler(
@@ -70,19 +64,9 @@ class LoginViewModel @Inject constructor(
                 context = context
             )) {
                 is Result.Error<GetCredentialResponse, SignInWithGoogleError> -> {
-                    when (val error = result.error) {
-                        SignInWithGoogleError.NoCredential -> _uiState.value = UiState.Error(
-                            error = error.asUiText(),
-                            flag = true
-                        )
-
-                        else -> {
-                            _uiState.value = UiState.Error(
-                                error = error.asUiText(),
-                                flag = false
-                            )
-                        }
-                    }
+                    _uiState.value = UiState.Error(
+                        error = result.error.asUiText()
+                    )
                 }
 
                 is Result.Success<GetCredentialResponse, SignInWithGoogleError> -> {
@@ -98,14 +82,16 @@ class LoginViewModel @Inject constructor(
                                     repository.signIn(
                                         idToken = googleIdTokenCredential.idToken,
                                         onComplete = { result ->
-                                            when(result) {
+                                            when (result) {
                                                 is Result.Error<Boolean, FirebaseError> -> {
                                                     _uiState.value = UiState.Error(
-                                                        error = result.error.asUiText(),
-                                                        flag = false
+                                                        error = result.error.asUiText()
                                                     )
                                                 }
+
                                                 is Result.Success<Boolean, FirebaseError> -> {
+                                                    schedular.scheduleWelcomeNotification()
+                                                    dailySchedular.scheduleDailyWelcomeNotification()
                                                     _uiState.value = UiState.Success(
                                                         data = result.data
                                                     )
